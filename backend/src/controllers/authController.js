@@ -54,9 +54,9 @@ exports.login = async (req, res) => {
       { $set: { token } },
       { new: true }
     );
-
+    const key = await process.env.API_KEY;
     // Return the token
-    res.status(201).json({ token });
+    res.status(201).json({ token, key });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

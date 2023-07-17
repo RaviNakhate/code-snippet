@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Submission = require("../models/Submission.js");
 const axios = require("axios");
 const User = require("../models/User");
 
@@ -50,5 +49,29 @@ router.get("/:username", async (req, res) => {
   }
 });
 
+router.post("/setTokenKey", async (req, res) => {
+  try {
+    const { token_key, username } = req.body;
+    const { token } = req.headers;
+
+    // Create a new submission
+    const user = await User.findOne({ username, token });
+    if (!user) {
+      return res.json({ error: "Invalid credentials" });
+    }
+
+    const updatedUserCode = await User.findByIdAndUpdate(user._id.toString(), {
+      $set: { token_key: token_key },
+    });
+
+    const data = {
+      status: "success",
+    };
+    res.status(201).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 module.exports = router;
